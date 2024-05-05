@@ -1,0 +1,90 @@
+---
+
+uart:
+  id: esp32_devkit1_uart2
+  rx_pin: GPIO16
+  baud_rate: 9600
+  data_bits: 8
+  parity: NONE
+  stop_bits: 1
+
+sml:
+  id: mysml
+  uart_id: esp32_devkit1_uart2
+  on_data:
+    - lambda: !lambda |-
+        if (valid) {
+        } else {
+          id(mqttclient).publish("smlreader/sml/error", format_hex(bytes));
+        }
+#          id(mqttclient).publish("smlreader/sml/raw-state", format_hex(bytes));
+
+sensor:
+  - platform: sml
+    name: "consumed_energy"
+    sml_id: mysml
+    obis_code: "1-0:1.8.0"
+    unit_of_measurement: kWh
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.0001
+  - platform: sml
+    name: "delivered_energy"
+    sml_id: mysml
+    obis_code: "1-0:2.8.0"
+    unit_of_measurement: kWh
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.0001
+  - platform: sml
+    name: "power"
+    sml_id: mysml
+    obis_code: "1-0:16.7.0"
+    unit_of_measurement: W
+  - platform: sml
+    name: "power_l1"
+    sml_id: mysml
+    obis_code: "1-0:36.7.0"
+    unit_of_measurement: W
+  - platform: sml
+    name: "power_l2"
+    sml_id: mysml
+    obis_code: "1-0:56.7.0"
+    unit_of_measurement: W
+  - platform: sml
+    name: "power_l3"
+    sml_id: mysml
+    obis_code: "1-0:76.7.0"
+    unit_of_measurement: W
+  - platform: sml
+    name: "voltage_l1"
+    sml_id: mysml
+    obis_code: "1-0:32.7.0"
+    unit_of_measurement: V
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+  - platform: sml
+    name: "voltage_l2"
+    sml_id: mysml
+    obis_code: "1-0:52.7.0"
+    unit_of_measurement: V
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+  - platform: sml
+    name: "voltage_l3"
+    sml_id: mysml
+    obis_code: "1-0:72.7.0"
+    unit_of_measurement: V
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+  - platform: sml
+    name: "frequency"
+    sml_id: mysml
+    obis_code: "1-0:14.7.0"
+    unit_of_measurement: Hz
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
